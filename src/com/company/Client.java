@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class Client {
+
     public static void main(String[] args) throws IOException {
         Socket clientSocket = new Socket();
         System.out.println("Connecting");
