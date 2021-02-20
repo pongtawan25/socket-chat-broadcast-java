@@ -13,13 +13,13 @@ public class Server {
         serverSocket.bind(new InetSocketAddress(8080));
         System.out.println("Listening to 8080");
 
-        ArrayList<Socket> clientSocketList = new ArrayList<>();
+        ArrayList<Socket> clientSocketList = new ArrayList<Socket>();
         while (true) {
             Socket clientSocket = serverSocket.accept();
             System.out.printf("Client connected %s:%d in %d\n", clientSocket.getInetAddress().getHostAddress(),
                     clientSocket.getPort(), clientSocket.getLocalPort());
-            Thread thread = new Thread(new ClientHandler(clientSocket, clientSocketList));
             clientSocketList.add(clientSocket);
+            Thread thread = new Thread(new ClientHandler(clientSocket, clientSocketList));
             thread.start();
         }
     }
@@ -38,18 +38,22 @@ class ClientHandler implements Runnable {
     public void run() {
         try {
             Scanner scanner = new Scanner(clientSocket.getInputStream());
-            while (true) {
-                if (scanner.hasNextLine()) {
-                    String message = scanner.nextLine();
-                    for (Socket client : clientSocketList) {
-                        client.getOutputStream().write((message + "\n").getBytes());
-                        client.getOutputStream().flush();
-                    }
+            while (scanner.hasNextLine()) {
+                String message = scanner.nextLine();
+                for (Socket client : clientSocketList) {
+                    client.getOutputStream().write((message + "\n").getBytes());
+                    client.getOutputStream().flush();
                 }
             }
 
         } catch (Exception e) {
 
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (Exception e) {
+
+            }
         }
     }
 }

@@ -16,15 +16,16 @@ public class Client {
         System.out.printf("Connected from port %d\n", clientSocket.getLocalPort());
 
         Scanner scanner = new Scanner(clientSocket.getInputStream());
+        new Thread(() -> {
+            while (true) {
+                System.out.println(scanner.nextLine());
+            }
+        }).start();
+
         while (true) {
-            System.out.print("Enter message: ");
             String message = sc.nextLine();
             clientSocket.getOutputStream().write((message + "\n").getBytes());
             clientSocket.getOutputStream().flush();
-            if (scanner.hasNextLine()) {
-                String msg = scanner.nextLine();
-                System.out.println(msg);
-            }
         }
     }
 }
